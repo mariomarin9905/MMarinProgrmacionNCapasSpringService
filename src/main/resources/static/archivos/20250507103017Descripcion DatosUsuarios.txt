@@ -1,0 +1,21 @@
+Descripcion del DataSet
+Atributos
+1.Nombre String
+2.Apellido Paterno String
+3.Apellido Materno String
+4.UaserName String
+5.Email String
+6.Password String
+7.Fecha Date
+8.Sexo 
+9.Telefono
+10.Celular
+11.Curp
+12.Estatus
+13.IdRol
+14.Calle
+15.Numero Interior
+16.Numero Exterior
+17.IdColonia
+
+Martin|Paredes|Contreras|MartineP|martinpa@email.com|123456|10-04-1994|M|5577889911|5577889911|MPCM100494|1|2|Primera de Mayo|1|100|8

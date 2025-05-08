@@ -1,0 +1,2 @@
+Rick|Sachez|Contreras|RikcC|rickC@email.com|123456|10-04-1994|H|5577889911|5577889911|4|1|2|2 de abril|1|100|8
+Morty|Smith|Sanchez|MortyC137|morty137@email.com|123456|10-04-2001|H|2277889911|2277889911||1|2|5 de mayo|A1|2|7
