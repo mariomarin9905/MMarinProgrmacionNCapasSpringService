@@ -6,7 +6,7 @@ import com.digis01.MMarinProgrmacionNCapasSpring.JPA.UsuarioDireccion;
 
 public interface IUsuarioDAO {  
     
-    Result UsuarioGetAllJPA();
+    Result GetAll();
 
     Result Add(UsuarioDireccion usuarioDireccion);
 
@@ -20,6 +20,6 @@ public interface IUsuarioDAO {
     
     Result UsuarioUpdateByEstatusJPA(int IdUsuario, int Estatus);
     
-   Result UsuarioGetAllDinamicoJPA(Usuario usuario);
+   Result GetAllDinamico(Usuario usuario);
     
 }

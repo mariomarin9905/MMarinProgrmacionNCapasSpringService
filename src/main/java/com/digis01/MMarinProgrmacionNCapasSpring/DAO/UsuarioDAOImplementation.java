@@ -1,24 +1,17 @@
 package com.digis01.MMarinProgrmacionNCapasSpring.DAO;
 
-import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Colonia;
+
 import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Direccion;
-import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Estado;
-import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Municipio;
-import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Pais;
+
 import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Result;
-import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Rol;
+
 import com.digis01.MMarinProgrmacionNCapasSpring.JPA.Usuario;
 import com.digis01.MMarinProgrmacionNCapasSpring.JPA.UsuarioDireccion;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import java.sql.ResultSet;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.CallableStatementCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +22,7 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
     private EntityManager entityManager;
 
     @Override
-    public Result UsuarioGetAllJPA() {
+    public Result GetAll() {
         Result result = new Result();
         try {
             TypedQuery<Usuario> queryUsuarios = this.entityManager.createQuery("FROM Usuario U ORDER BY U.IdUsuario", Usuario.class);
@@ -204,7 +197,7 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
     }
 
     @Override
-    public Result UsuarioGetAllDinamicoJPA(Usuario usuario) {
+    public Result GetAllDinamico(Usuario usuario) {
         Result result = new Result();
         try {
             String queryBase = "FROM Usuario U";

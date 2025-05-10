@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -47,12 +48,9 @@ public class UsuarioRestController {
     @Autowired
     private UsuarioDAOImplementation usuarioDAOImplementation;
 
-    @Autowired
-    private RolDAOImplementation rolDAOImplementation;
-
     @GetMapping()
     public ResponseEntity GetAll() {
-        Result result = this.usuarioDAOImplementation.UsuarioGetAllJPA();
+        Result result = this.usuarioDAOImplementation.GetAll();
         if (result.correct) {
             if (result.objects.isEmpty()) {
                 return ResponseEntity.status(204).body(null);
@@ -99,8 +97,8 @@ public class UsuarioRestController {
         try {
             Result result = new Result();
             if (BindingResult.hasErrors()) {
-                result.correct = false;                
-                result.object =BindingResult.getFieldError("Usuario.Nombre");
+                result.correct = false;
+                result.object = BindingResult.getFieldError("Usuario.Nombre");
                 return ResponseEntity.status(400).body(result);
             } else {
                 result = this.usuarioDAOImplementation.Add(usuarioDireccion);
@@ -138,27 +136,69 @@ public class UsuarioRestController {
 
     @PatchMapping("/UsuarioUpdateByEstatus/{IdUsuario}")
     public ResponseEntity UsuarioUpdateByEstatus(@PathVariable int IdUsuario, @RequestBody Usuario usuario) {
-        Result result = this.usuarioDAOImplementation.UsuarioUpdateByEstatusJPA(IdUsuario, usuario.getEstatus());
-        if (result.correct) {
-            return ResponseEntity.ok(result);
-        } else {
-            return ResponseEntity.status(400).body(null);
-        }
+        try {
+            Result result = this.usuarioDAOImplementation.UsuarioUpdateByEstatusJPA(IdUsuario, usuario.getEstatus());
+            if (result.correct) {
+                return ResponseEntity.ok(result);
+            } else {
+                return ResponseEntity.status(400).body(null);
+            }
 
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/busquedaDinamica")
     public ResponseEntity BusquedaDinamica(@RequestBody Usuario usuario) {
-        Result result = this.usuarioDAOImplementation.UsuarioGetAllDinamicoJPA(usuario);
-        if (result.correct) {
-            if (result.objects.isEmpty()) {
-                return ResponseEntity.noContent().build();
+        try {
+            Result result = new Result();
+            result.correct = true;
+            List<UsuarioDireccion> usuariosGeneral = this.usuarioDAOImplementation.GetAll().objects.stream().map(u -> (UsuarioDireccion) u).collect(Collectors.toList());
+            if (usuario.Rol.getIdRol() == 0 && usuario.getEstatus() == -1) {
+                result.objects = usuariosGeneral.stream()
+                        .filter(u -> (u.Usuario.getNombre().toLowerCase().contains(usuario.getNombre().toLowerCase()))
+                        && (u.Usuario.getApellidoPaterno().toLowerCase().contains(usuario.getApellidoPaterno().toLowerCase()))
+                        && (u.Usuario.getApellidoMaterno().toLowerCase().contains(usuario.getApellidoMaterno().toLowerCase())))
+                        .collect(Collectors.toList());
             } else {
-                return ResponseEntity.ok(result);
+                if (usuario.Rol.getIdRol() > 0 && usuario.getEstatus() == -1) {
+                    result.objects = usuariosGeneral.stream().filter(u -> (u.Usuario.getNombre().toLowerCase().contains(usuario.getNombre().toLowerCase()))
+                            && (u.Usuario.getApellidoPaterno().toLowerCase().contains(usuario.getApellidoPaterno().toLowerCase()))
+                            && (u.Usuario.getApellidoMaterno().toLowerCase().contains(usuario.getApellidoMaterno().toLowerCase()))
+                            && (u.Usuario.Rol.getIdRol() == usuario.Rol.getIdRol()))
+                            .collect(Collectors.toList());
+
+                } else if (usuario.Rol.getIdRol() == 0) {
+                    result.objects = usuariosGeneral.stream().filter(u -> (u.Usuario.getNombre().toLowerCase().contains(usuario.getNombre().toLowerCase()))
+                            && (u.Usuario.getApellidoPaterno().toLowerCase().contains(usuario.getApellidoPaterno().toLowerCase()))
+                            && (u.Usuario.getApellidoMaterno().toLowerCase().contains(usuario.getApellidoMaterno().toLowerCase()))
+                            && (u.Usuario.getEstatus() == usuario.getEstatus()))
+                            .collect(Collectors.toList());
+
+                } else {
+                    result.objects = usuariosGeneral.stream().filter(u -> (u.Usuario.getNombre().toLowerCase().contains(usuario.getNombre().toLowerCase()))
+                            && (u.Usuario.getApellidoPaterno().toLowerCase().contains(usuario.getApellidoPaterno().toLowerCase()))
+                            && (u.Usuario.getApellidoMaterno().toLowerCase().contains(usuario.getApellidoMaterno().toLowerCase()))
+                            && (u.Usuario.getEstatus() == usuario.getEstatus())
+                            && (u.Usuario.Rol.getIdRol() == usuario.Rol.getIdRol()))
+                            .collect(Collectors.toList());
+                }
+
             }
-        } else {
-            return ResponseEntity.noContent().build();
+            if (result.correct) {
+                if (result.objects.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                } else {
+                    return ResponseEntity.ok(result);
+                }
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
+
     }
 
     @PostMapping("/CargaMasiva")
